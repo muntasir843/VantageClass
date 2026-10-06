@@ -3,7 +3,7 @@
    network first, but if it hasn't answered in 1.6s the saved copy is shown
    (and quietly refreshed). Photos and icons: the saved copy. A new upload
    changes the version below, which clears the old copies. */
-var V="vc-5c3f4e25e1";
+var V="vc-d9adf73481";
 var CORE=["./","index.html","services.html","fleet.html","coverage.html","favicon.svg","apple-touch-icon.png","manifest.webmanifest"];
 self.addEventListener("install",function(e){e.waitUntil(caches.open(V).then(function(c){return c.addAll(CORE)}).then(function(){return self.skipWaiting()}))});
 self.addEventListener("activate",function(e){e.waitUntil(caches.keys().then(function(ks){return Promise.all(ks.filter(function(k){return k!==V}).map(function(k){return caches.delete(k)}))}).then(function(){return self.clients.claim()}))});
