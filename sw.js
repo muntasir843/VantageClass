@@ -3,9 +3,9 @@
    network first, but if it hasn't answered in 1.6s the saved copy is shown
    (and quietly refreshed). Photos and icons: the saved copy. A new upload
    changes the version below, which clears the old copies. */
-var V="vc-d9adf73481";
-var CORE=["./","index.html","services.html","fleet.html","coverage.html","favicon.svg","apple-touch-icon.png","manifest.webmanifest"];
-self.addEventListener("install",function(e){e.waitUntil(caches.open(V).then(function(c){return c.addAll(CORE)}).then(function(){return self.skipWaiting()}))});
+var V="vc-5acf7ffe73";
+var CORE=["./","services","fleet","coverage","favicon.svg","apple-touch-icon.png","manifest.webmanifest"];
+self.addEventListener("install",function(e){e.waitUntil(caches.open(V).then(function(c){return Promise.all(CORE.map(function(u){return c.add(u).catch(function(){})}))}).then(function(){return self.skipWaiting()}))});
 self.addEventListener("activate",function(e){e.waitUntil(caches.keys().then(function(ks){return Promise.all(ks.filter(function(k){return k!==V}).map(function(k){return caches.delete(k)}))}).then(function(){return self.clients.claim()}))});
 function page(req){return caches.open(V).then(function(c){
   var net=fetch(req).then(function(r){if(r&&r.ok)c.put(req,r.clone());return r});
@@ -15,5 +15,5 @@ function page(req){return caches.open(V).then(function(c){
 function saved(req){return caches.open(V).then(function(c){return c.match(req).then(function(m){return m||fetch(req).then(function(r){
   if(r&&(r.ok||r.type==="opaque"))c.put(req,r.clone());return r})})})}
 self.addEventListener("fetch",function(e){var req=e.request;if(req.method!=="GET")return;var u=new URL(req.url);
-  if(u.origin===location.origin){if(req.mode==="navigate"||/(\.html|\/)$/.test(u.pathname))e.respondWith(page(req));else e.respondWith(saved(req));return}
+  if(u.origin===location.origin){if(req.mode==="navigate"||/(\.html|\/|\/[^.\/]+)$/.test(u.pathname))e.respondWith(page(req));else e.respondWith(saved(req));return}
   if(/^fonts\.(googleapis|gstatic)\.com$/.test(u.hostname))e.respondWith(saved(req))});
